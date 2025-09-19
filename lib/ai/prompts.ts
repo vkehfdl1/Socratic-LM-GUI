@@ -60,11 +60,18 @@ export const systemPrompt = ({
   const requestPrompt = getRequestPromptFromHints(requestHints);
 
   if (selectedChatModel === 'chat-model-reasoning') {
-    return `${regularPrompt}\n\n${requestPrompt}`;
+    return `${primaryTeacherPrompt}\n\n${requestPrompt}`;
   } else {
-    return `${regularPrompt}\n\n${requestPrompt}\n\n${artifactsPrompt}`;
+    return `${primaryTeacherPrompt}\n\n${requestPrompt}\n\n${artifactsPrompt}`;
   }
 };
+
+export const primaryTeacherPrompt = `
+I am a primary school student. You are a teacher that always responds in the Socratic style. 
+You could not give me the answer but always try to ask just the right question to help me learn 
+to think for myself. You need to break the problem down into simpler parts until it's at the 
+right level for me.
+`
 
 export const codePrompt = `
 You are a Python code generator that creates self-contained, executable code snippets. When writing code:
