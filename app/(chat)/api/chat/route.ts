@@ -153,7 +153,189 @@ export async function POST(request: Request) {
     }
 
     const messagesFromDb = await getMessagesByChatId({ id });
-    const uiMessages = [...convertToUIMessages(messagesFromDb), message];
+
+    function createFewShotExamples(): ChatMessage[] {
+      return [
+        {
+          id: generateUUID(),
+          role: 'system' as const,
+          parts: [{type: 'text' as const, text: 'Example 1'}],
+          metadata: {
+            createdAt: new Date().toISOString(),
+          },
+        },
+        {
+          id: generateUUID(),
+          role: 'user' as const,
+          parts: [{ type: 'text' as const, text: '숫자 1,2,3,4,5 중에서 서로 다른 4개를 택해 일렬로 나열하여 만들 수 있는 모든 네 자리 자연수 중에서 임의로 하나의 수를 택할 때, 택한 수가 5의 배수 또는 3500 이상일 확률은?' }],
+          metadata: {
+            createdAt: new Date().toISOString(),
+          },
+        },
+        {
+          id: generateUUID(),
+          role: 'assistant' as const,
+          parts: [
+            {
+              type: 'text' as const,
+              text: `<PROGRESS>0.0</PROGRESS>
+              먼저 전체 경우의 수를 계산해야 합니다. 1,2,3,4,5 중 서로 다른 4개를 택할 수 있는 경우의 수는 어떻게 되나요?
+              `,
+            },
+          ],
+          metadata: {
+            createdAt: new Date().toISOString(),
+          },
+        },
+        {
+          id: generateUUID(),
+          role: 'user' as const,
+          parts: [{ type: 'text' as const, text: '전체 경우의 수는 5*4*3*2 = 120 입니다.' }],
+          metadata: {
+            createdAt: new Date().toISOString(),
+          },
+        },
+        {
+          id: generateUUID(),
+          role: 'assistant' as const,
+          parts: [
+            {
+              type: 'text' as const,
+              text: `<PROGRESS>0.1</PROGRESS>
+              정확합니다! 이제 네 자리 자연수 중에서 5의 배수인 경우를 생각해 봅시다. 네 자리 자연수가 5의 배수가 되려면 끝 자리 수가 0 또는 5여야겠죠? 그렇다면 5의 배수인 경우의 수는 어떻게 되나요?`,
+            },
+          ],
+          metadata: {
+            createdAt: new Date().toISOString(),
+          },
+        },
+        {
+          id: generateUUID(),
+          role: 'user' as const,
+          parts: [{ type: 'text' as const, text: '마지막 자리 수가 0이 될 수는 없죠... 마지막 수가 5라면 4개 중 3개를 택해서 나열하는 경우의 수와 같아요. 그러면 4*3*2=24 입니다.' }],
+          metadata: {
+            createdAt: new Date().toISOString(),
+          },
+        },
+        {
+          id: generateUUID(),
+          role: 'assistant' as const,
+          parts: [
+            {
+              type: 'text' as const,
+              text: `<PROGRESS>0.3</PROGRESS>
+              잘했어요! 이제 3500 이상인 경우를 생각해 봅시다. 네 자리 자연수가 3500 이상이 되려면 첫 자리 수가 3, 4, 5 중 하나여야겠죠? 그렇다면 3500 이상인 경우의 수는 어떻게 되나요?`,
+            },
+          ],
+          metadata: {
+            createdAt: new Date().toISOString(),
+          },
+        },
+        {
+          id: generateUUID(),
+          role: 'user' as const,
+          parts: [{ type: 'text' as const, text: '일단 앞자리가 4나 5인 경우의 수는... 48? 근데 3일때는 다 되는 것이 아니잖아' }],
+          metadata: {
+            createdAt: new Date().toISOString(),
+          },
+        },
+        {
+          id: generateUUID(),
+          role: 'assistant' as const,
+          parts: [
+            {
+              type: 'text' as const,
+              text: `<PROGRESS>0.5</PROGRESS>
+              맞습니다. 앞 자리가 3일때에 대한 힌트를 조금 더 드리죠. 앞자리가 3이고, 두 번째 자리가 5인 경우는 모두 3500 이상이 됩니다. 이 경우의 수는 어떻게 되나요?`,
+            },
+          ],
+          metadata: {
+            createdAt: new Date().toISOString(),
+          },
+        },
+        {
+          id: generateUUID(),
+          role: 'user' as const,
+          parts: [{ type: 'text' as const, text: '그러면 3,5 다음에 두 자리만 결정하면 되니깐, 3개 중 2개 고르기. 그러면 6이고 총 54겠네.' }],
+          metadata: {
+            createdAt: new Date().toISOString(),
+          },
+        },
+        {
+          id: generateUUID(),
+          role: 'assistant' as const,
+          parts: [
+            {
+              type: 'text' as const,
+              text: `<PROGRESS>0.7</PROGRESS>
+              맞습니다. 그러면 두 경우의 수 중 겹치는, 즉 동시에 5의 배수이면서 3500 이상인 경우의 수를 빼주어야 합니다. 이 경우는 어떻게 되나요?`,
+            },
+          ],
+          metadata: {
+            createdAt: new Date().toISOString(),
+          },
+        },
+        {
+          id: generateUUID(),
+          role: 'user' as const,
+          parts: [{ type: 'text' as const, text: '끝자리가 5, 앞쪽이 4나 5여야겠네. 근데 5가 하나니깐 앞 쪽이 4. 그러니깐 6개.' }],
+          metadata: {
+            createdAt: new Date().toISOString(),
+          },
+        },
+        {
+          id: generateUUID(),
+          role: 'assistant' as const,
+          parts: [
+            {
+              type: 'text' as const,
+              text: `<PROGRESS>0.9</PROGRESS>
+              정확해요. 거의 다 풀었군요. 이제 총 경우의 수와 앞에서 구한 경우의 수를 통해서 최종 확률을 구해보세요.`,
+            },
+          ],
+          metadata: {
+            createdAt: new Date().toISOString(),
+          },
+        },
+        {
+          id: generateUUID(),
+          role: 'user' as const,
+          parts: [{ type: 'text' as const, text: '그러면 5분의 3이 답이 되겠군.' }],
+          metadata: {
+            createdAt: new Date().toISOString(),
+          },
+        },
+        {
+          id: generateUUID(),
+          role: 'assistant' as const,
+          parts: [
+            {
+              type: 'text' as const,
+              text: `<PROGRESS>1.0</PROGRESS>
+              정답입니다. 5분의 3이 최종 확률이 되겠네요. 수고했어요!`,
+            },
+          ],
+          metadata: {
+            createdAt: new Date().toISOString(),
+          },
+        },
+        {
+          id: generateUUID(),
+          role: 'system' as const,
+          parts: [{type: 'text' as const, text: 'Example 2'}],
+          metadata: {
+            createdAt: new Date().toISOString(),
+          },
+        }
+      ];
+    }
+
+    const fewShotExamples = createFewShotExamples();
+    const uiMessages = [
+      ...convertToUIMessages(messagesFromDb),
+      ...fewShotExamples,
+      message,
+    ];
 
     const { longitude, latitude, city, country } = geolocation(request);
 
