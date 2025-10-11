@@ -1,15 +1,16 @@
-import { auth } from '@/app/(auth)/auth';
-import {
-  getChatById,
-  getMessagesByChatId,
-  getStreamIdsByChatId,
-} from '@/lib/db/queries';
-import type { Chat } from '@/lib/db/schema';
-import { ChatSDKError } from '@/lib/errors';
-import type { ChatMessage } from '@/lib/types';
-import { createUIMessageStream, JsonToSseTransformStream } from 'ai';
+// REDIS DISABLED: Most imports are no longer needed since stream functionality is disabled
+// import { auth } from '@/app/(auth)/auth';
+// import {
+//   getChatById,
+//   getMessagesByChatId,
+//   getStreamIdsByChatId,
+// } from '@/lib/db/queries';
+// import type { Chat } from '@/lib/db/schema';
+// import { ChatSDKError } from '@/lib/errors';
+// import type { ChatMessage } from '@/lib/types';
+// import { createUIMessageStream, JsonToSseTransformStream } from 'ai';
 import { getStreamContext } from '../../route';
-import { differenceInSeconds } from 'date-fns';
+// import { differenceInSeconds } from 'date-fns';
 
 export async function GET(
   _: Request,
@@ -20,10 +21,13 @@ export async function GET(
   const streamContext = getStreamContext();
   const resumeRequestedAt = new Date();
 
+  // REDIS DISABLED: streamContext is always null, so return empty response
   if (!streamContext) {
     return new Response(null, { status: 204 });
   }
 
+  /* ORIGINAL REDIS CODE - COMMENTED OUT SINCE streamContext IS ALWAYS NULL:
+  
   if (!chatId) {
     return new ChatSDKError('bad_request:api').toResponse();
   }
@@ -70,10 +74,8 @@ export async function GET(
     emptyDataStream.pipeThrough(new JsonToSseTransformStream()),
   );
 
-  /*
-   * For when the generation is streaming during SSR
-   * but the resumable stream has concluded at this point.
-   */
+  // For when the generation is streaming during SSR
+  // but the resumable stream has concluded at this point.
   if (!stream) {
     const messages = await getMessagesByChatId({ id: chatId });
     const mostRecentMessage = messages.at(-1);
@@ -109,4 +111,5 @@ export async function GET(
   }
 
   return new Response(stream, { status: 200 });
+  */
 }

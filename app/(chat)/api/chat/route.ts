@@ -29,11 +29,13 @@ import { myProvider } from '@/lib/ai/providers';
 import { entitlementsByUserType } from '@/lib/ai/entitlements';
 import { postRequestBodySchema, type PostRequestBody } from './schema';
 import { geolocation } from '@vercel/functions';
-import {
-  createResumableStreamContext,
-  type ResumableStreamContext,
-} from 'resumable-stream';
-import { after } from 'next/server';
+// REDIS DISABLED: Commenting out resumable-stream imports
+// import {
+//   createResumableStreamContext,
+//   type ResumableStreamContext,
+// } from 'resumable-stream';
+// REDIS DISABLED: after import not needed anymore
+// import { after } from 'next/server';
 import { ChatSDKError } from '@/lib/errors';
 import type { ChatMessage } from '@/lib/types';
 import type { ChatModel } from '@/lib/ai/models';
@@ -46,7 +48,8 @@ import type { AppUsage } from '@/lib/usage';
 
 export const maxDuration = 60;
 
-let globalStreamContext: ResumableStreamContext | null = null;
+// REDIS DISABLED: Global stream context is now disabled
+// let globalStreamContext: ResumableStreamContext | null = null;
 
 const getTokenlensCatalog = cache(
   async (): Promise<ModelCatalog | undefined> => {
@@ -64,7 +67,12 @@ const getTokenlensCatalog = cache(
   { revalidate: 24 * 60 * 60 }, // 24 hours
 );
 
+// REDIS DISABLED: getStreamContext function is now disabled
 export function getStreamContext() {
+  // REDIS DISABLED: Always return null to disable resumable streams
+  return null;
+
+  /* ORIGINAL REDIS CODE - COMMENTED OUT:
   if (!globalStreamContext) {
     try {
       globalStreamContext = createResumableStreamContext({
@@ -82,6 +90,7 @@ export function getStreamContext() {
   }
 
   return globalStreamContext;
+  */
 }
 
 export async function POST(request: Request) {
@@ -210,13 +219,19 @@ export async function POST(request: Request) {
                 myProvider.languageModel(selectedChatModel).modelId;
               if (!modelId) {
                 finalMergedUsage = usage;
-                dataStream.write({ type: 'data-usage', data: finalMergedUsage });
+                dataStream.write({
+                  type: 'data-usage',
+                  data: finalMergedUsage,
+                });
                 return;
               }
 
               if (!providers) {
                 finalMergedUsage = usage;
-                dataStream.write({ type: 'data-usage', data: finalMergedUsage });
+                dataStream.write({
+                  type: 'data-usage',
+                  data: finalMergedUsage,
+                });
                 return;
               }
 
@@ -270,13 +285,13 @@ export async function POST(request: Request) {
 
     const streamContext = getStreamContext();
 
+    // REDIS DISABLED: streamContext will always be null, so we use the fallback path
     if (streamContext) {
-      return new Response(
-        await streamContext.resumableStream(streamId, () =>
-          stream.pipeThrough(new JsonToSseTransformStream()),
-        ),
-      );
+      // REDIS DISABLED: This code path will never be reached since streamContext is always null
+      // The original resumable stream code would be here but is disabled
+      return new Response(stream.pipeThrough(new JsonToSseTransformStream()));
     } else {
+      // This path is now always used since Redis is disabled
       return new Response(stream.pipeThrough(new JsonToSseTransformStream()));
     }
   } catch (error) {
