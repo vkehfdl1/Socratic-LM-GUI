@@ -17,7 +17,7 @@ import { MessageActions } from './message-actions';
 import { PreviewAttachment } from './preview-attachment';
 import { Weather } from './weather';
 import equal from 'fast-deep-equal';
-import { cn, sanitizeText } from '@/lib/utils';
+import { cn, sanitizeText, removeProgressTags } from '@/lib/utils';
 import { MessageEditor } from './message-editor';
 import { DocumentPreview } from './document-preview';
 import { MessageReasoning } from './message-reasoning';
@@ -140,7 +140,9 @@ const PurePreviewMessage = ({
                           : undefined
                       }
                     >
-                      <Response>{sanitizeText(part.text)}</Response>
+                      <Response>
+                        {removeProgressTags(sanitizeText(part.text))}
+                      </Response>
                     </MessageContent>
                   </div>
                 );

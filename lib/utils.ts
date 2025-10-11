@@ -97,6 +97,20 @@ export function sanitizeText(text: string) {
   return text.replace('<has_function_call>', '');
 }
 
+export function extractProgress(text: string): number | null {
+  const progressMatch = text.match(/<PROGRESS>([\d.]+)<\/PROGRESS>/);
+  if (progressMatch?.[1]) {
+    const progress = Number.parseFloat(progressMatch[1]);
+    // Clamp progress to 0-1 range
+    return Math.max(0, Math.min(1, progress));
+  }
+  return null;
+}
+
+export function removeProgressTags(text: string): string {
+  return text.replace(/<PROGRESS>[\d.]+<\/PROGRESS>/g, '');
+}
+
 export function convertToUIMessages(messages: DBMessage[]): ChatMessage[] {
   return messages.map((message) => ({
     id: message.id,
