@@ -1,6 +1,6 @@
 import { PreviewMessage, ThinkingMessage } from './message';
 import { Greeting } from './greeting';
-import { memo, useEffect, useMemo } from 'react';
+import { memo, useEffect } from 'react';
 import type { Vote } from '@/lib/db/schema';
 import equal from 'fast-deep-equal';
 import type { UseChatHelpers } from '@ai-sdk/react';
@@ -9,8 +9,6 @@ import type { ChatMessage } from '@/lib/types';
 import { useDataStream } from './data-stream-provider';
 import { Conversation, ConversationContent } from './elements/conversation';
 import { ArrowDownIcon } from 'lucide-react';
-import { LearningProgress } from './learning-progress';
-import { extractProgress, getTextFromMessage } from '@/lib/utils';
 
 interface MessagesProps {
   chatId: string;
@@ -48,35 +46,6 @@ function PureMessages({
 
   useDataStream();
 
-  // Extract the latest progress from all assistant messages
-  const currentProgress = useMemo(() => {
-    // 메시지가 없으면 null 반환
-    if (messages.length === 0) return null;
-
-    // 기본값을 0으로 설정 (학습 시작)
-    let latestProgress = 0;
-
-    // 현재 스트리밍 중이면 기본 진행도 표시
-    if (status === 'streaming') {
-      latestProgress = 0.1; // 시작 진행도
-    }
-
-    // Go through messages in reverse to get the most recent progress
-    for (let i = messages.length - 1; i >= 0; i--) {
-      const message = messages[i];
-      if (message.role === 'assistant') {
-        const messageText = getTextFromMessage(message);
-        const progress = extractProgress(messageText);
-        if (progress !== null) {
-          latestProgress = progress;
-          break;
-        }
-      }
-    }
-
-    return latestProgress;
-  }, [messages, status]);
-
   useEffect(() => {
     if (status === 'submitted') {
       requestAnimationFrame(() => {
@@ -97,13 +66,6 @@ function PureMessages({
       className="overscroll-behavior-contain -webkit-overflow-scrolling-touch flex-1 touch-pan-y overflow-y-scroll"
       style={{ overflowAnchor: 'none' }}
     >
-      {/* Global learning progress at the top */}
-      {currentProgress !== null && (
-        <div className="sticky top-0 z-10 mx-auto w-full max-w-4xl bg-background px-2 pt-2 md:px-4">
-          <LearningProgress progress={currentProgress} />
-        </div>
-      )}
-
       <Conversation className="mx-auto flex min-w-0 max-w-4xl flex-col gap-4 md:gap-6">
         <ConversationContent className="flex flex-col gap-4 px-2 py-4 md:gap-6 md:px-4">
           {messages.length === 0 && <Greeting />}
