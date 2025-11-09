@@ -2,12 +2,10 @@
 
 import { useState, useEffect } from 'react';
 
-export const THINKING_TIMER_DURATION = 5; // 5 seconds
-
-export function useThinkingTimer() {
+export function useThinkingTimer(duration: number) {
   const [isTimerActive, setIsTimerActive] = useState(false);
   const [isTimerStarted, setIsTimerStarted] = useState(false);
-  const [remainingTime, setRemainingTime] = useState(THINKING_TIMER_DURATION);
+  const [remainingTime, setRemainingTime] = useState(duration);
 
   useEffect(() => {
     if (!isTimerActive || remainingTime <= 0) {
@@ -18,20 +16,20 @@ export function useThinkingTimer() {
       setRemainingTime((prevTime) => {
         if (prevTime <= 1) {
           setIsTimerActive(false);
-          return THINKING_TIMER_DURATION;
+          return duration;
         }
         return prevTime - 1;
       });
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [isTimerActive, remainingTime]);
+  }, [isTimerActive, remainingTime, duration]);
 
   const startTimer = () => {
-    if (!isTimerStarted) {
+    if (!isTimerStarted && duration > 0) {
       setIsTimerStarted(true);
       setIsTimerActive(true);
-      setRemainingTime(THINKING_TIMER_DURATION);
+      setRemainingTime(duration);
     }
   };
 

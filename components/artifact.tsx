@@ -28,6 +28,7 @@ import equal from 'fast-deep-equal';
 import type { UseChatHelpers } from '@ai-sdk/react';
 import type { VisibilityType } from './visibility-selector';
 import type { Attachment, ChatMessage } from '@/lib/types';
+import type { ThinkingTimerDuration } from './thinking-timer-selector';
 
 export const artifactDefinitions = [
   textArtifact,
@@ -68,6 +69,7 @@ function PureArtifact({
   isReadonly,
   selectedVisibilityType,
   selectedModelId,
+  thinkingTimerDuration,
 }: {
   chatId: string;
   input: string;
@@ -84,6 +86,7 @@ function PureArtifact({
   isReadonly: boolean;
   selectedVisibilityType: VisibilityType;
   selectedModelId: string;
+  thinkingTimerDuration: ThinkingTimerDuration;
 }) {
   const { artifact, setArtifact, metadata, setMetadata } = useArtifact();
 
@@ -339,6 +342,7 @@ function PureArtifact({
                     setMessages={setMessages}
                     selectedVisibilityType={selectedVisibilityType}
                     selectedModelId={selectedModelId}
+                    thinkingTimerDuration={thinkingTimerDuration}
                   />
                 </div>
               </div>
@@ -508,6 +512,8 @@ export const Artifact = memo(PureArtifact, (prevProps, nextProps) => {
   if (prevProps.input !== nextProps.input) return false;
   if (!equal(prevProps.messages, nextProps.messages.length)) return false;
   if (prevProps.selectedVisibilityType !== nextProps.selectedVisibilityType)
+    return false;
+  if (prevProps.thinkingTimerDuration !== nextProps.thinkingTimerDuration)
     return false;
 
   return true;

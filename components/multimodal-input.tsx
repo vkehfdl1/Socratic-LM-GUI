@@ -48,6 +48,7 @@ import { Context } from './elements/context';
 import { myProvider } from '@/lib/ai/providers';
 import { useThinkingTimer } from '@/hooks/use-thinking-timer';
 import { ThinkingTimer } from './thinking-timer';
+import type { ThinkingTimerDuration } from './thinking-timer-selector';
 
 function PureMultimodalInput({
   chatId,
@@ -65,6 +66,7 @@ function PureMultimodalInput({
   selectedModelId,
   onModelChange,
   usage,
+  thinkingTimerDuration,
 }: {
   chatId: string;
   input: string;
@@ -81,6 +83,7 @@ function PureMultimodalInput({
   selectedModelId: string;
   onModelChange?: (modelId: string) => void;
   usage?: AppUsage;
+  thinkingTimerDuration: ThinkingTimerDuration;
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { width } = useWindowSize();
@@ -90,7 +93,7 @@ function PureMultimodalInput({
     startTimer,
     resetTimerStarted,
     isTimerStarted,
-  } = useThinkingTimer();
+  } = useThinkingTimer(thinkingTimerDuration);
 
   const adjustHeight = useCallback(() => {
     if (textareaRef.current) {
@@ -386,6 +389,8 @@ export const MultimodalInput = memo(
     if (prevProps.selectedVisibilityType !== nextProps.selectedVisibilityType)
       return false;
     if (prevProps.selectedModelId !== nextProps.selectedModelId) return false;
+    if (prevProps.thinkingTimerDuration !== nextProps.thinkingTimerDuration)
+      return false;
 
     return true;
   },

@@ -23,6 +23,7 @@ import { ChatSDKError } from '@/lib/errors';
 import type { Attachment, ChatMessage } from '@/lib/types';
 import type { AppUsage } from '@/lib/usage';
 import { useDataStream } from './data-stream-provider';
+import type { ThinkingTimerDuration } from './thinking-timer-selector';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -65,8 +66,10 @@ export function Chat({
   const [usage, setUsage] = useState<AppUsage | undefined>(initialLastContext);
   const [showCreditCardAlert, setShowCreditCardAlert] = useState(false);
   const [currentModelId, setCurrentModelId] = useState(initialChatModel);
+  const [thinkingTimerDuration, setThinkingTimerDuration] =
+    useState<ThinkingTimerDuration>(5);
   const currentModelIdRef = useRef(currentModelId);
-  
+
   useEffect(() => {
     currentModelIdRef.current = currentModelId;
   }, [currentModelId]);
@@ -163,6 +166,8 @@ export function Chat({
           selectedVisibilityType={initialVisibilityType}
           isReadonly={isReadonly}
           session={session}
+          thinkingTimerDuration={thinkingTimerDuration}
+          onThinkingTimerDurationChange={setThinkingTimerDuration}
         />
 
         <Messages
@@ -194,6 +199,7 @@ export function Chat({
               selectedModelId={currentModelId}
               onModelChange={setCurrentModelId}
               usage={usage}
+              thinkingTimerDuration={thinkingTimerDuration}
             />
           )}
         </div>
@@ -215,6 +221,7 @@ export function Chat({
         isReadonly={isReadonly}
         selectedVisibilityType={visibilityType}
         selectedModelId={currentModelId}
+        thinkingTimerDuration={thinkingTimerDuration}
       />
 
       <AlertDialog
