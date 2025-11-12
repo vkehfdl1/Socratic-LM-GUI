@@ -68,7 +68,7 @@ export function Chat({
   const [showCreditCardAlert, setShowCreditCardAlert] = useState(false);
   const [currentModelId, setCurrentModelId] = useState(initialChatModel);
   const [thinkingTimerDuration, setThinkingTimerDuration] =
-    useState<ThinkingTimerDuration>(5);
+    useState<ThinkingTimerDuration>(30);
   const [problemType, setProblemType] = useState<ProblemType>('math');
   const currentModelIdRef = useRef(currentModelId);
   const problemTypeRef = useRef(problemType);

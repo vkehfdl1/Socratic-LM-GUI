@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/select';
 import { ClockRewind } from './icons';
 
-export type ThinkingTimerDuration = 0 | 5 | 30;
+export type ThinkingTimerDuration = 0 | 30 | 60;
 
 interface ThinkingTimerSelectorProps {
   selectedDuration: ThinkingTimerDuration;
@@ -35,8 +35,8 @@ export function ThinkingTimerSelector({
       </SelectTrigger>
       <SelectContent>
         <SelectItem value="0">No Delay</SelectItem>
-        <SelectItem value="5">5 seconds</SelectItem>
         <SelectItem value="30">30 seconds</SelectItem>
+        <SelectItem value="60">60 seconds (1 minute)</SelectItem>
       </SelectContent>
     </Select>
   );
