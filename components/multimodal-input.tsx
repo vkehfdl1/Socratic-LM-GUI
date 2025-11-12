@@ -49,6 +49,8 @@ import { myProvider } from '@/lib/ai/providers';
 import { useThinkingTimer } from '@/hooks/use-thinking-timer';
 import { ThinkingTimer } from './thinking-timer';
 import type { ThinkingTimerDuration } from './thinking-timer-selector';
+import type { ProblemType } from '@/lib/constants';
+import { ProblemTypeSelector } from './problem-type-selector';
 
 function PureMultimodalInput({
   chatId,
@@ -67,6 +69,8 @@ function PureMultimodalInput({
   onModelChange,
   usage,
   thinkingTimerDuration,
+  selectedProblemType,
+  onProblemTypeChange,
 }: {
   chatId: string;
   input: string;
@@ -84,6 +88,8 @@ function PureMultimodalInput({
   onModelChange?: (modelId: string) => void;
   usage?: AppUsage;
   thinkingTimerDuration: ThinkingTimerDuration;
+  selectedProblemType: ProblemType;
+  onProblemTypeChange: (problemType: ProblemType) => void;
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { width } = useWindowSize();
@@ -262,8 +268,15 @@ function PureMultimodalInput({
   );
 
   return (
-    <div className="flex relative flex-col gap-4 w-full">
+    <div className="relative flex w-full flex-col gap-4">
       <ThinkingTimer isActive={isTimerActive} remainingTime={remainingTime} />
+
+      {messages.length === 0 && (
+        <ProblemTypeSelector
+          selectedProblemType={selectedProblemType}
+          onProblemTypeChange={onProblemTypeChange}
+        />
+      )}
 
       {messages.length === 0 &&
         attachments.length === 0 &&
@@ -390,6 +403,8 @@ export const MultimodalInput = memo(
       return false;
     if (prevProps.selectedModelId !== nextProps.selectedModelId) return false;
     if (prevProps.thinkingTimerDuration !== nextProps.thinkingTimerDuration)
+      return false;
+    if (prevProps.selectedProblemType !== nextProps.selectedProblemType)
       return false;
 
     return true;

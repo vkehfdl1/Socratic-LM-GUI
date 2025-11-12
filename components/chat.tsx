@@ -24,6 +24,7 @@ import type { Attachment, ChatMessage } from '@/lib/types';
 import type { AppUsage } from '@/lib/usage';
 import { useDataStream } from './data-stream-provider';
 import type { ThinkingTimerDuration } from './thinking-timer-selector';
+import type { ProblemType } from '@/lib/constants';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -68,11 +69,17 @@ export function Chat({
   const [currentModelId, setCurrentModelId] = useState(initialChatModel);
   const [thinkingTimerDuration, setThinkingTimerDuration] =
     useState<ThinkingTimerDuration>(5);
+  const [problemType, setProblemType] = useState<ProblemType>('math');
   const currentModelIdRef = useRef(currentModelId);
+  const problemTypeRef = useRef(problemType);
 
   useEffect(() => {
     currentModelIdRef.current = currentModelId;
   }, [currentModelId]);
+
+  useEffect(() => {
+    problemTypeRef.current = problemType;
+  }, [problemType]);
 
   const {
     messages,
@@ -97,6 +104,7 @@ export function Chat({
             message: messages.at(-1),
             selectedChatModel: currentModelIdRef.current,
             selectedVisibilityType: visibilityType,
+            selectedProblemType: problemTypeRef.current,
             ...body,
           },
         };
@@ -200,6 +208,8 @@ export function Chat({
               onModelChange={setCurrentModelId}
               usage={usage}
               thinkingTimerDuration={thinkingTimerDuration}
+              selectedProblemType={problemType}
+              onProblemTypeChange={setProblemType}
             />
           )}
         </div>
