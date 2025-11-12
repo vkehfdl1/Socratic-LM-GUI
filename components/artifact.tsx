@@ -29,6 +29,7 @@ import type { UseChatHelpers } from '@ai-sdk/react';
 import type { VisibilityType } from './visibility-selector';
 import type { Attachment, ChatMessage } from '@/lib/types';
 import type { ThinkingTimerDuration } from './thinking-timer-selector';
+import type { ProblemType } from '@/lib/constants';
 
 export const artifactDefinitions = [
   textArtifact,
@@ -70,6 +71,8 @@ function PureArtifact({
   selectedVisibilityType,
   selectedModelId,
   thinkingTimerDuration,
+  selectedProblemType,
+  onProblemTypeChange,
 }: {
   chatId: string;
   input: string;
@@ -87,6 +90,8 @@ function PureArtifact({
   selectedVisibilityType: VisibilityType;
   selectedModelId: string;
   thinkingTimerDuration: ThinkingTimerDuration;
+  selectedProblemType: ProblemType;
+  onProblemTypeChange: (problemType: ProblemType) => void;
 }) {
   const { artifact, setArtifact, metadata, setMetadata } = useArtifact();
 
@@ -343,6 +348,8 @@ function PureArtifact({
                     selectedVisibilityType={selectedVisibilityType}
                     selectedModelId={selectedModelId}
                     thinkingTimerDuration={thinkingTimerDuration}
+                    selectedProblemType={selectedProblemType}
+                    onProblemTypeChange={onProblemTypeChange}
                   />
                 </div>
               </div>

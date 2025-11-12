@@ -232,6 +232,8 @@ export function Chat({
         selectedVisibilityType={visibilityType}
         selectedModelId={currentModelId}
         thinkingTimerDuration={thinkingTimerDuration}
+        selectedProblemType={problemType}
+        onProblemTypeChange={setProblemType}
       />
 
       <AlertDialog
