@@ -25,6 +25,7 @@ import type { AppUsage } from '@/lib/usage';
 import { useDataStream } from './data-stream-provider';
 import type { ThinkingTimerDuration } from './thinking-timer-selector';
 import type { ProblemType } from '@/lib/constants';
+import { useResponseTimer } from '@/hooks/use-response-timer';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -73,6 +74,9 @@ export function Chat({
   const currentModelIdRef = useRef(currentModelId);
   const problemTypeRef = useRef(problemType);
 
+  // 응답 시간 측정을 위한 hook
+  const { startTimer, stopTimer, resetTimer } = useResponseTimer();
+
   useEffect(() => {
     currentModelIdRef.current = currentModelId;
   }, [currentModelId]);
@@ -116,6 +120,8 @@ export function Chat({
     },
     onFinish: () => {
       mutate(unstable_serialize(getChatHistoryPaginationKey));
+      // LLM 응답이 완료되면 타이머 시작
+      startTimer();
     },
     onError: (error) => {
       if (error instanceof ChatSDKError) {
@@ -210,6 +216,7 @@ export function Chat({
               thinkingTimerDuration={thinkingTimerDuration}
               selectedProblemType={problemType}
               onProblemTypeChange={setProblemType}
+              stopResponseTimer={stopTimer}
             />
           )}
         </div>
@@ -234,6 +241,7 @@ export function Chat({
         thinkingTimerDuration={thinkingTimerDuration}
         selectedProblemType={problemType}
         onProblemTypeChange={setProblemType}
+        stopResponseTimer={stopTimer}
       />
 
       <AlertDialog

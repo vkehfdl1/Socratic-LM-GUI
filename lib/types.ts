@@ -50,7 +50,9 @@ export type ChatMessage = UIMessage<
   MessageMetadata,
   CustomUIDataTypes,
   ChatTools
->;
+> & {
+  responseTime?: number; // 유저가 응답하는데 걸린 시간 (초 단위, 0.1초 정밀도)
+};
 
 export interface Attachment {
   name: string;

@@ -71,6 +71,7 @@ function PureMultimodalInput({
   thinkingTimerDuration,
   selectedProblemType,
   onProblemTypeChange,
+  stopResponseTimer,
 }: {
   chatId: string;
   input: string;
@@ -90,6 +91,7 @@ function PureMultimodalInput({
   thinkingTimerDuration: ThinkingTimerDuration;
   selectedProblemType: ProblemType;
   onProblemTypeChange: (problemType: ProblemType) => void;
+  stopResponseTimer: () => number | null;
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { width } = useWindowSize();
@@ -127,11 +129,12 @@ function PureMultimodalInput({
       }, 100);
     }
   }, [status, messages, startTimer, isTimerStarted]);
-  const resetHeight = () => {
+
+  const resetHeight = useCallback(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = '44px';
     }
-  };
+  }, []);
 
   const [localStorageInput, setLocalStorageInput] = useLocalStorage(
     'input',
@@ -167,6 +170,9 @@ function PureMultimodalInput({
     // Reset timer started state when submitting new message
     resetTimerStarted();
 
+    // 응답 시간 측정
+    const responseTime = stopResponseTimer();
+
     sendMessage({
       role: 'user',
       parts: [
@@ -181,6 +187,7 @@ function PureMultimodalInput({
           text: input,
         },
       ],
+      responseTime: responseTime ?? undefined, // 응답 시간 추가
     });
 
     setAttachments([]);
@@ -201,6 +208,8 @@ function PureMultimodalInput({
     width,
     chatId,
     resetTimerStarted,
+    stopResponseTimer,
+    resetHeight,
   ]);
 
   const uploadFile = async (file: File) => {

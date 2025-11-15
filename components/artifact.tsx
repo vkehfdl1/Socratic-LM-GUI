@@ -73,6 +73,7 @@ function PureArtifact({
   thinkingTimerDuration,
   selectedProblemType,
   onProblemTypeChange,
+  stopResponseTimer,
 }: {
   chatId: string;
   input: string;
@@ -92,6 +93,7 @@ function PureArtifact({
   thinkingTimerDuration: ThinkingTimerDuration;
   selectedProblemType: ProblemType;
   onProblemTypeChange: (problemType: ProblemType) => void;
+  stopResponseTimer: () => number | null;
 }) {
   const { artifact, setArtifact, metadata, setMetadata } = useArtifact();
 
@@ -350,6 +352,7 @@ function PureArtifact({
                     thinkingTimerDuration={thinkingTimerDuration}
                     selectedProblemType={selectedProblemType}
                     onProblemTypeChange={onProblemTypeChange}
+                    stopResponseTimer={stopResponseTimer}
                   />
                 </div>
               </div>

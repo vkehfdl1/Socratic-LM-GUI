@@ -90,6 +90,15 @@ const PurePreviewMessage = ({
               message.role === 'user' && mode !== 'edit',
           })}
         >
+          {/* 응답 시간 표시 - 유저 메시지 위에 */}
+          {message.role === 'user' && message.responseTime !== undefined && (
+            <div className="mb-1 flex justify-end">
+              <span className="text-[10px] text-muted-foreground">
+                생각 시간: {message.responseTime.toFixed(1)}초
+              </span>
+            </div>
+          )}
+
           {attachmentsFromMessage.length > 0 && (
             <div
               data-testid={`message-attachments`}
@@ -140,9 +149,7 @@ const PurePreviewMessage = ({
                           : undefined
                       }
                     >
-                      <Response>
-                        {sanitizeText(part.text)}
-                      </Response>
+                      <Response>{sanitizeText(part.text)}</Response>
                     </MessageContent>
                   </div>
                 );

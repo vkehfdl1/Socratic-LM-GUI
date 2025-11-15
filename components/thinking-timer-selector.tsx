@@ -36,7 +36,7 @@ export function ThinkingTimerSelector({
       <SelectContent>
         <SelectItem value="0">No Delay</SelectItem>
         <SelectItem value="30">30 seconds</SelectItem>
-        <SelectItem value="60">60 seconds (1 minute)</SelectItem>
+        <SelectItem value="60">60 seconds</SelectItem>
       </SelectContent>
     </Select>
   );
