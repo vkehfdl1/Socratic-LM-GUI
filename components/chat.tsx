@@ -36,6 +36,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { BoredomButton } from './boredom-button';
 
 export function Chat({
   id,
@@ -75,7 +76,8 @@ export function Chat({
   const problemTypeRef = useRef(problemType);
 
   // 응답 시간 측정을 위한 hook
-  const { startTimer, stopTimer, resetTimer } = useResponseTimer();
+  const { startTimer, stopTimer, resetTimer, isTimerRunning, startTime } =
+    useResponseTimer();
 
   useEffect(() => {
     currentModelIdRef.current = currentModelId;
@@ -243,6 +245,9 @@ export function Chat({
         onProblemTypeChange={setProblemType}
         stopResponseTimer={stopTimer}
       />
+
+      {/* 심심하면 누르는 버튼 - 첫 메시지 이후 항상 표시 */}
+      <BoredomButton hasMessages={messages.length > 0} />
 
       <AlertDialog
         open={showCreditCardAlert}

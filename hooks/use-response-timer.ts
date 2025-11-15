@@ -39,5 +39,6 @@ export function useResponseTimer() {
     stopTimer,
     resetTimer,
     isTimerRunning: startTime !== null,
+    startTime,
   };
 }
